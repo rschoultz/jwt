@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"bytes"
+	"crypto"
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/hmac"
@@ -146,7 +147,7 @@ func (c *Claims) RSASign(alg string, key *rsa.PrivateKey, extraHeaders ...json.R
 	// use signature space as a buffer while not set
 	buf := token[len(token):]
 	if alg != "" && alg[0] == 'P' {
-		sig, err = rsa.SignPSS(rand.Reader, key, hash, digest.Sum(buf), &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthAuto})
+		sig, err = rsa.SignPSS(rand.Reader, key, hash, digest.Sum(buf), &rsa.PSSOptions{SaltLength: 32, Hash: crypto.SHA256})
 	} else {
 		sig, err = rsa.SignPKCS1v15(rand.Reader, key, hash, digest.Sum(buf))
 	}
